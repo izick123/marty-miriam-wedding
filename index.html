@@ -18,10 +18,6 @@
         <div class="upload-copy">
           <p class="kicker">Marty & Miriam</p>
           <h1 id="hero-title">Share your wedding photos</h1>
-          <p>
-            Upload photos from the wedding and they will appear in the live gallery once the
-            real-time backend is connected.
-          </p>
         </div>
 
         <form class="upload-panel" id="upload-form">
@@ -38,6 +34,7 @@
             <span>Choose wedding photos</span>
             <small>JPG, PNG, HEIC, or phone camera uploads</small>
           </label>
+          <p class="file-status" id="file-status">No photos selected yet.</p>
           <button class="button primary" type="submit">Upload to gallery</button>
           <p class="form-status" id="form-status" role="status"></p>
         </form>
@@ -61,6 +58,7 @@
         <figcaption>
           <strong></strong>
           <span></span>
+          <a download>Download</a>
         </figcaption>
       </figure>
     </template>
