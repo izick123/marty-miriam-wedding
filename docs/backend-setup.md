@@ -45,13 +45,21 @@ If you want moderation, change the `approved` default in `docs/supabase.sql` to 
 
 Open `/admin.html` on the deployed site.
 
+The default admin password is:
+
+```text
+marty-miriam-admin
+```
+
 The admin page can:
 
 - download individual photos
 - export a JSON list of uploaded photo URLs and captions
 - delete photos from the live gallery and storage bucket
 
-Anyone with the admin page URL can use these controls. For a more locked-down setup, add Supabase Auth before the wedding.
+If deleted photos come back after refresh, rerun `docs/supabase.sql` in Supabase. The delete button needs the delete policies from that file.
+
+This is a lightweight static-site password gate. For a more locked-down setup, add Supabase Auth before the wedding.
 
 To send everything to the couple after the wedding, open `/admin.html`, download the photos individually, and export the JSON list as a simple record of captions, names, and URLs.
 
