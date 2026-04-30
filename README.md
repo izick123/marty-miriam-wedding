@@ -22,12 +22,7 @@ Open `http://localhost:4173`.
 
 The site works locally without a backend, but production live uploads require Supabase.
 
-1. Create a Supabase project.
-2. Run `docs/supabase.sql` in the Supabase SQL editor.
-3. In Supabase, enable Realtime for the `wedding_photos` table.
-4. Add your project URL and anon key in `src/config.js`.
-5. Deploy the site.
-6. Set `deployedUrl` in `src/config.js` to the final public URL.
+See `docs/backend-setup.md` for the full backend setup.
 
 ## Suggested Deployment
 
