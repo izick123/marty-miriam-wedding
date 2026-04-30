@@ -1,0 +1,19 @@
+{
+  "name": "marty-miriam-wedding",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Elegant wedding website with guest photo uploads for Marty and Miriam.",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "wedding",
+    "gallery",
+    "supabase",
+    "qr-upload"
+  ],
+  "author": "",
+  "license": "UNLICENSED"
+}
