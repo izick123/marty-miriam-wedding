@@ -41,6 +41,20 @@ The current setup lets uploads appear immediately. For a wedding reception, that
 
 If you want moderation, change the `approved` default in `docs/supabase.sql` to `false`, then build a small admin page that flips `approved` to `true`.
 
+## Delete Or Export Photos
+
+Open `/admin.html` on the deployed site.
+
+The admin page can:
+
+- download individual photos
+- export a JSON list of uploaded photo URLs and captions
+- delete photos from the live gallery and storage bucket
+
+Anyone with the admin page URL can use these controls. For a more locked-down setup, add Supabase Auth before the wedding.
+
+To send everything to the couple after the wedding, open `/admin.html`, download the photos individually, and export the JSON list as a simple record of captions, names, and URLs.
+
 ## GitHub Pages
 
 GitHub Pages is fine for the frontend. The backend lives in Supabase, so no server is needed on GitHub.
