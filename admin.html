@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Admin tools for Marty and Miriam's wedding photo gallery." />
+    <title>Marty & Miriam | Gallery Admin</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="admin-shell">
+      <section class="admin-header">
+        <p class="kicker">Gallery admin</p>
+        <h1>Manage uploaded photos</h1>
+        <p>
+          Download the full upload list, save individual photos, or delete images from the live
+          gallery.
+        </p>
+      </section>
+
+      <section class="admin-tools">
+        <button class="button primary" id="refresh-photos" type="button">Refresh photos</button>
+        <button class="button secondary" id="export-json" type="button">Export photo list</button>
+        <p class="form-status" id="admin-status" role="status"></p>
+      </section>
+
+      <section class="gallery-section admin-gallery" aria-labelledby="admin-gallery-title">
+        <div class="section-heading">
+          <p class="kicker">Uploaded photos</p>
+          <h2 id="admin-gallery-title">Gallery controls</h2>
+        </div>
+        <div class="gallery-grid" id="admin-gallery-grid"></div>
+      </section>
+    </main>
+
+    <template id="admin-photo-template">
+      <figure class="photo-card">
+        <img alt="" loading="lazy" />
+        <figcaption>
+          <strong></strong>
+          <span></span>
+          <div class="admin-actions">
+            <a download>Download</a>
+            <button type="button">Delete</button>
+          </div>
+        </figcaption>
+      </figure>
+    </template>
+
+    <script type="module" src="src/admin.js"></script>
+  </body>
+</html>
