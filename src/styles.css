@@ -110,14 +110,6 @@ h2 {
   line-height: 0.98;
 }
 
-.upload-copy p:not(.kicker) {
-  width: min(600px, 100%);
-  margin: 24px 0 0;
-  color: rgba(255, 248, 242, 0.9);
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: 1.6;
-}
-
 .upload-panel {
   display: grid;
   gap: 16px;
@@ -210,6 +202,14 @@ input {
   line-height: 1.45;
 }
 
+.file-status {
+  min-height: 24px;
+  margin: 0;
+  color: var(--red-900);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .gallery-section {
   padding: clamp(52px, 8vw, 90px) clamp(20px, 6vw, 86px);
   background: var(--red-950);
@@ -256,9 +256,70 @@ input {
   padding: 14px;
 }
 
+.photo-card a,
+.photo-card button {
+  width: fit-content;
+  border: 0;
+  border-radius: 4px;
+  padding: 7px 10px;
+  background: rgba(217, 173, 93, 0.18);
+  color: var(--ivory);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.photo-card button {
+  background: rgba(255, 248, 242, 0.16);
+}
+
 .photo-card span {
   color: rgba(255, 248, 242, 0.72);
   font-size: 0.9rem;
+}
+
+.admin-shell {
+  min-height: 100vh;
+  background: var(--red-950);
+  color: var(--ivory);
+}
+
+.admin-header,
+.admin-tools {
+  padding: clamp(32px, 6vw, 72px) clamp(20px, 6vw, 86px) 0;
+}
+
+.admin-header {
+  width: min(920px, 100%);
+}
+
+.admin-header p:not(.kicker) {
+  color: rgba(255, 248, 242, 0.8);
+  line-height: 1.6;
+}
+
+.admin-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.button.secondary {
+  border-color: rgba(255, 248, 242, 0.35);
+  background: transparent;
+  color: var(--ivory);
+}
+
+.admin-gallery {
+  padding-top: 42px;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 @media (max-width: 860px) {
