@@ -97,19 +97,25 @@ export function createGalleryApi() {
         return;
       }
 
-      const { error: rowError } = await supabase
+      const { data, error: rowError } = await supabase
         .from(weddingConfig.supabaseTable)
         .delete()
-        .eq("id", photo.id);
+        .eq("id", photo.id)
+        .select("id");
 
       if (rowError) throw rowError;
+      if (!data?.length) {
+        throw new Error("Supabase did not delete the row. Rerun docs/supabase.sql to add delete policies.");
+      }
 
       if (photo.storage_path) {
         const { error: storageError } = await supabase.storage
           .from(weddingConfig.supabaseBucket)
           .remove([photo.storage_path]);
 
-        if (storageError) throw storageError;
+        if (storageError) {
+          console.warn("Photo row was deleted, but storage cleanup failed.", storageError);
+        }
       }
     }
   };
