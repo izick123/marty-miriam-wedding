@@ -6,6 +6,8 @@ The site includes:
 
 - guest photo upload form
 - live gallery
+- guest photo downloads
+- admin page for deleting uploads and exporting a photo list
 - full-screen wedding background image
 - local preview mode with `localStorage`
 - Supabase production wiring for real-time uploads
