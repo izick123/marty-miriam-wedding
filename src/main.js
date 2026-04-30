@@ -1,20 +1,16 @@
 import { weddingConfig } from "./config.js";
 
 const els = {
-  days: document.querySelector("#days-until"),
   form: document.querySelector("#upload-form"),
   fileInput: document.querySelector("#photo-files"),
   status: document.querySelector("#form-status"),
   gallery: document.querySelector("#gallery-grid"),
   empty: document.querySelector("#empty-state"),
-  template: document.querySelector("#photo-template"),
-  qrCanvas: document.querySelector("#qr-code"),
-  qrUrl: document.querySelector("#qr-url")
+  template: document.querySelector("#photo-template")
 };
 
 const localKey = "marty-miriam-wedding-photos";
 const channel = "BroadcastChannel" in window ? new BroadcastChannel("wedding-gallery") : null;
-const uploadUrl = `${weddingConfig.deployedUrl || window.location.origin + window.location.pathname}#upload`;
 
 let supabase = null;
 let photos = [];
@@ -22,33 +18,15 @@ let photos = [];
 init();
 
 async function init() {
-  renderCountdown();
-  setupExternalSiteLink();
-  setInterval(renderCountdown, 60 * 60 * 1000);
   await connectSupabase();
   await loadPhotos();
   renderGallery();
   setupRealtime();
   setupUploadForm();
-  setupQr();
 
   if (window.location.hash === "#upload") {
     document.querySelector("#upload")?.scrollIntoView({ behavior: "smooth" });
   }
-}
-
-function renderCountdown() {
-  const then = new Date(weddingConfig.weddingDate);
-  const now = new Date();
-  const diff = Math.max(0, then - now);
-  els.days.textContent = Math.ceil(diff / 86400000).toString();
-}
-
-function setupExternalSiteLink() {
-  const link = document.querySelector("#external-site-link");
-  if (!weddingConfig.existingWeddingSiteUrl) return;
-  link.href = weddingConfig.existingWeddingSiteUrl;
-  link.hidden = false;
 }
 
 async function connectSupabase() {
@@ -236,32 +214,6 @@ function renderGallery() {
     note.textContent = photo.note || formatDate(photo.created_at);
     els.gallery.append(item);
   });
-}
-
-async function setupQr() {
-  els.qrUrl.textContent = uploadUrl;
-
-  try {
-    const QRCode = await import("https://esm.sh/qrcode@1.5.4");
-    await QRCode.toCanvas(els.qrCanvas, uploadUrl, {
-      width: 240,
-      margin: 2,
-      color: {
-        dark: "#7f1017",
-        light: "#fff8f2"
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    const ctx = els.qrCanvas.getContext("2d");
-    ctx.fillStyle = "#fff8f2";
-    ctx.fillRect(0, 0, 240, 240);
-    ctx.fillStyle = "#7f1017";
-    ctx.font = "16px Georgia, serif";
-    ctx.textAlign = "center";
-    ctx.fillText("QR loads after deploy", 120, 112);
-    ctx.fillText("Use the URL below", 120, 136);
-  }
 }
 
 function setStatus(message) {
