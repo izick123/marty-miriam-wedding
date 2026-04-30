@@ -20,8 +20,10 @@ alter table public.wedding_photos enable row level security;
 
 drop policy if exists "Anyone can view wedding photos" on public.wedding_photos;
 drop policy if exists "Anyone can add wedding photos" on public.wedding_photos;
+drop policy if exists "Anyone can delete wedding photos" on public.wedding_photos;
 drop policy if exists "Anyone can upload wedding photos" on storage.objects;
 drop policy if exists "Anyone can view wedding photos" on storage.objects;
+drop policy if exists "Anyone can delete wedding photos" on storage.objects;
 
 create policy "Anyone can view wedding photos"
   on public.wedding_photos
@@ -36,6 +38,11 @@ create policy "Anyone can add wedding photos"
     and image_url like 'https://%'
     and storage_path ~ '^[0-9]+-[0-9a-f-]{36}\.(jpg|jpeg|png|webp|gif|heic)$'
   );
+
+create policy "Anyone can delete wedding photos"
+  on public.wedding_photos
+  for delete
+  using (true);
 
 insert into storage.buckets (id, name, public)
 values ('wedding-photos', 'wedding-photos', true)
@@ -55,6 +62,11 @@ create policy "Anyone can upload wedding photos"
 create policy "Anyone can view wedding photos"
   on storage.objects
   for select
+  using (bucket_id = 'wedding-photos');
+
+create policy "Anyone can delete wedding photos"
+  on storage.objects
+  for delete
   using (bucket_id = 'wedding-photos');
 
 do $$
