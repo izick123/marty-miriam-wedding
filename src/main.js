@@ -1,96 +1,53 @@
-import { weddingConfig } from "./config.js";
+import { compressImage, createGalleryApi, formatDate } from "./gallery-api.js";
+
+const api = createGalleryApi();
 
 const els = {
   form: document.querySelector("#upload-form"),
   fileInput: document.querySelector("#photo-files"),
+  fileStatus: document.querySelector("#file-status"),
   status: document.querySelector("#form-status"),
   gallery: document.querySelector("#gallery-grid"),
   empty: document.querySelector("#empty-state"),
   template: document.querySelector("#photo-template")
 };
 
-const localKey = "marty-miriam-wedding-photos";
 const channel = "BroadcastChannel" in window ? new BroadcastChannel("wedding-gallery") : null;
-
-let supabase = null;
 let photos = [];
 
 init();
 
 async function init() {
-  await connectSupabase();
-  await loadPhotos();
+  await api.connect();
+  photos = await api.loadPhotos();
   renderGallery();
   setupRealtime();
   setupUploadForm();
-
-  if (window.location.hash === "#upload") {
-    document.querySelector("#upload")?.scrollIntoView({ behavior: "smooth" });
-  }
-}
-
-async function connectSupabase() {
-  if (!weddingConfig.supabaseUrl || !weddingConfig.supabaseAnonKey) {
-    setStatus("Preview mode: photos save only in this browser until Supabase is configured.");
-    return;
-  }
-
-  try {
-    const { createClient } = await import(weddingConfig.supabaseCdn);
-    supabase = createClient(weddingConfig.supabaseUrl, weddingConfig.supabaseAnonKey);
-    setStatus("Live upload mode is connected.");
-  } catch (error) {
-    console.error(error);
-    setStatus("Could not load Supabase. Preview mode is still available.");
-  }
-}
-
-async function loadPhotos() {
-  if (!supabase) {
-    photos = JSON.parse(localStorage.getItem(localKey) || "[]");
-    return;
-  }
-
-  const { data, error } = await supabase
-    .from(weddingConfig.supabaseTable)
-    .select("id,image_url,guest_name,note,created_at")
-    .order("created_at", { ascending: false })
-    .limit(120);
-
-  if (error) {
-    console.error(error);
-    setStatus("Gallery could not load from Supabase yet.");
-    return;
-  }
-
-  photos = data || [];
 }
 
 function setupRealtime() {
-  if (supabase) {
-    supabase
-      .channel("wedding-photo-feed")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: weddingConfig.supabaseTable },
-        (payload) => {
-          photos = [payload.new, ...photos];
-          renderGallery();
-        }
-      )
-      .subscribe();
-    return;
-  }
+  api.subscribe((photo) => {
+    photos = [photo, ...photos.filter((item) => item.id !== photo.id)];
+    renderGallery();
+  });
 
-  channel?.addEventListener("message", (event) => {
+  channel?.addEventListener("message", async (event) => {
     if (event.data?.type === "photo-added") {
-      photos = JSON.parse(localStorage.getItem(localKey) || "[]");
+      photos = await api.loadPhotos();
       renderGallery();
     }
   });
 }
 
 function setupUploadForm() {
+  els.fileInput.addEventListener("change", () => {
+    const files = Array.from(els.fileInput.files || []);
+    els.fileStatus.textContent = files.length
+      ? `${files.length} photo${files.length === 1 ? "" : "s"} selected: ${files.map((file) => file.name).join(", ")}`
+      : "No photos selected yet.";
+    setStatus("");
+  });
+
   els.form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const files = Array.from(els.fileInput.files || []);
@@ -105,96 +62,25 @@ function setupUploadForm() {
     setStatus(`Uploading ${files.length} photo${files.length === 1 ? "" : "s"}...`);
 
     try {
+      const uploaded = [];
+
       for (const file of files) {
         const compressed = await compressImage(file).catch(() => file);
-        const record = supabase
-          ? await uploadToSupabase(compressed, guestName, note)
-          : await uploadToLocalPreview(compressed, guestName, note);
-
-        photos = [record, ...photos];
+        const record = await api.uploadPhoto(compressed, guestName, note);
+        uploaded.push(record);
       }
 
+      const uploadedIds = new Set(uploaded.map((photo) => photo.id));
+      photos = [...uploaded.reverse(), ...photos.filter((photo) => !uploadedIds.has(photo.id))];
       els.form.reset();
+      els.fileStatus.textContent = "No photos selected yet.";
       renderGallery();
-      setStatus("Uploaded. Thank you for adding to the gallery.");
+      setStatus(`${uploaded.length} photo${uploaded.length === 1 ? "" : "s"} uploaded. Thank you!`);
       channel?.postMessage({ type: "photo-added" });
     } catch (error) {
       console.error(error);
-      setStatus("Upload failed. Try one photo at a time or check the backend setup.");
+      setStatus("Upload failed. Try one photo at a time or ask for help.");
     }
-  });
-}
-
-async function uploadToSupabase(file, guestName, note) {
-  const extension = file.type.split("/")[1] || "jpg";
-  const path = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from(weddingConfig.supabaseBucket)
-    .upload(path, file, {
-      contentType: file.type,
-      cacheControl: "31536000",
-      upsert: false
-    });
-
-  if (uploadError) throw uploadError;
-
-  const {
-    data: { publicUrl }
-  } = supabase.storage.from(weddingConfig.supabaseBucket).getPublicUrl(path);
-
-  const payload = {
-    image_url: publicUrl,
-    storage_path: path,
-    guest_name: guestName,
-    note
-  };
-
-  const { data, error } = await supabase
-    .from(weddingConfig.supabaseTable)
-    .insert(payload)
-    .select("id,image_url,guest_name,note,created_at")
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-async function uploadToLocalPreview(file, guestName, note) {
-  const imageUrl = await fileToDataUrl(file);
-  const record = {
-    id: crypto.randomUUID(),
-    image_url: imageUrl,
-    guest_name: guestName,
-    note,
-    created_at: new Date().toISOString()
-  };
-  const nextPhotos = [record, ...JSON.parse(localStorage.getItem(localKey) || "[]")].slice(0, 40);
-  localStorage.setItem(localKey, JSON.stringify(nextPhotos));
-  return record;
-}
-
-async function compressImage(file) {
-  if (!file.type.startsWith("image/")) {
-    throw new Error("Only images can be uploaded.");
-  }
-
-  const imageUrl = await fileToDataUrl(file);
-  const image = await loadImage(imageUrl);
-  const maxEdge = 1800;
-  const scale = Math.min(1, maxEdge / Math.max(image.width, image.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(image.width * scale);
-  canvas.height = Math.round(image.height * scale);
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-  return new Promise((resolve) => {
-    canvas.toBlob(
-      (blob) => resolve(new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" })),
-      "image/jpeg",
-      0.86
-    );
   });
 }
 
@@ -207,42 +93,23 @@ function renderGallery() {
     const img = item.querySelector("img");
     const name = item.querySelector("strong");
     const note = item.querySelector("span");
+    const download = item.querySelector("a");
 
     img.src = photo.image_url;
     img.alt = photo.note ? `Wedding photo: ${photo.note}` : "Wedding guest photo";
     name.textContent = photo.guest_name || "Wedding guest";
     note.textContent = photo.note || formatDate(photo.created_at);
+    download.href = photo.image_url;
+    download.download = suggestedFilename(photo);
     els.gallery.append(item);
   });
 }
 
+function suggestedFilename(photo) {
+  const safeName = (photo.guest_name || "guest").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  return `marty-miriam-${safeName}-${photo.id}.jpg`;
+}
+
 function setStatus(message) {
   els.status.textContent = message;
-}
-
-function fileToDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = reject;
-    image.src = src;
-  });
-}
-
-function formatDate(value) {
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit"
-  }).format(new Date(value));
 }
