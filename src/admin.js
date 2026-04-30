@@ -1,7 +1,14 @@
 import { createGalleryApi, formatDate } from "./gallery-api.js";
+import { weddingConfig } from "./config.js";
 
 const api = createGalleryApi();
 const els = {
+  login: document.querySelector("#admin-login"),
+  loginForm: document.querySelector("#admin-login-form"),
+  password: document.querySelector("#admin-password"),
+  loginStatus: document.querySelector("#login-status"),
+  content: document.querySelector("#admin-content"),
+  tools: document.querySelector("#admin-tools"),
   grid: document.querySelector("#admin-gallery-grid"),
   status: document.querySelector("#admin-status"),
   refresh: document.querySelector("#refresh-photos"),
@@ -14,9 +21,34 @@ let photos = [];
 init();
 
 async function init() {
+  els.loginForm.addEventListener("submit", unlockAdmin);
   els.refresh.addEventListener("click", loadAndRender);
   els.exportJson.addEventListener("click", exportPhotoList);
+
+  if (sessionStorage.getItem("wedding-admin-unlocked") === "true") {
+    showAdmin();
+    await loadAndRender();
+  }
+}
+
+async function unlockAdmin(event) {
+  event.preventDefault();
+  const hash = await sha256(els.password.value);
+
+  if (hash !== weddingConfig.adminPasswordHash) {
+    els.loginStatus.textContent = "Wrong password.";
+    return;
+  }
+
+  sessionStorage.setItem("wedding-admin-unlocked", "true");
+  showAdmin();
   await loadAndRender();
+}
+
+function showAdmin() {
+  els.login.hidden = true;
+  els.content.hidden = false;
+  els.tools.hidden = false;
 }
 
 async function loadAndRender() {
@@ -87,4 +119,12 @@ function suggestedFilename(photo) {
 
 function setStatus(message) {
   els.status.textContent = message;
+}
+
+async function sha256(value) {
+  const bytes = new TextEncoder().encode(value);
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(hash))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 }
