@@ -9,7 +9,20 @@
   </head>
   <body>
     <main class="admin-shell">
-      <section class="admin-header">
+      <section class="admin-login" id="admin-login">
+        <form class="upload-panel admin-login-panel" id="admin-login-form">
+          <p class="kicker">Gallery admin</p>
+          <h1>Enter admin password</h1>
+          <label>
+            Password
+            <input id="admin-password" type="password" autocomplete="current-password" />
+          </label>
+          <button class="button primary" type="submit">Unlock admin</button>
+          <p class="form-status" id="login-status" role="status"></p>
+        </form>
+      </section>
+
+      <section class="admin-header" id="admin-content" hidden>
         <p class="kicker">Gallery admin</p>
         <h1>Manage uploaded photos</h1>
         <p>
@@ -18,7 +31,7 @@
         </p>
       </section>
 
-      <section class="admin-tools">
+      <section class="admin-tools" id="admin-tools" hidden>
         <button class="button primary" id="refresh-photos" type="button">Refresh photos</button>
         <button class="button secondary" id="export-json" type="button">Export photo list</button>
         <p class="form-status" id="admin-status" role="status"></p>
