@@ -285,6 +285,22 @@ input {
   color: var(--ivory);
 }
 
+.admin-login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.admin-login-panel {
+  width: min(460px, 100%);
+}
+
+.admin-login-panel h1 {
+  color: var(--red-950);
+  font-size: clamp(2.2rem, 8vw, 3.7rem);
+}
+
 .admin-header,
 .admin-tools {
   padding: clamp(32px, 6vw, 72px) clamp(20px, 6vw, 86px) 0;
