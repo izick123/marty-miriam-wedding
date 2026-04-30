@@ -5,112 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Marty and Miriam's wedding website with celebration details and live guest photo uploads."
+      content="Marty and Miriam's live wedding photo upload gallery."
     />
-    <title>Marty & Miriam | June 14, 2026</title>
-    <link rel="preload" href="public/assets/wedding-hero.svg" as="image" />
+    <title>Marty & Miriam | Wedding Photos</title>
+    <link rel="preload" href="public/assets/wedding-background.png" as="image" />
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="#home" aria-label="Marty and Miriam home">
-        <span>M</span>
-        <span>&</span>
-        <span>M</span>
-      </a>
-      <nav aria-label="Wedding navigation">
-        <a href="#details">Details</a>
-        <a href="#upload">Upload</a>
-        <a href="#gallery">Gallery</a>
-        <a href="#qr">QR</a>
-      </nav>
-    </header>
-
-    <main>
-      <section class="hero" id="home" aria-labelledby="hero-title">
-        <div class="hero-media" aria-hidden="true"></div>
-        <div class="hero-content">
-          <p class="kicker">June 14, 2026</p>
-          <h1 id="hero-title">Marty & Miriam</h1>
-          <p class="hero-copy">
-            A red-and-gold celebration honoring Chinese wedding traditions with a joyful Jewish
-            Mazel tov woven in.
-          </p>
-          <div class="hero-actions">
-            <a class="button primary" href="#upload">Upload photos</a>
-            <a class="button ghost" id="external-site-link" href="#" hidden>RSVP & gifts</a>
-            <a class="button ghost" href="#details">View details</a>
-          </div>
-        </div>
-        <div class="countdown" aria-live="polite">
-          <span id="days-until">--</span>
-          <small>days to go</small>
-        </div>
-      </section>
-
-      <section class="details-band" id="details" aria-labelledby="details-title">
-        <div>
-          <p class="kicker">The celebration</p>
-          <h2 id="details-title">Sunday, June 14, 2026</h2>
-        </div>
-        <div class="detail-grid">
-          <article>
-            <span class="detail-mark">囍</span>
-            <h3>Venue</h3>
-            <p>The Loft and Chapel at Cedar Ridge</p>
-          </article>
-          <article>
-            <span class="detail-mark">מזל</span>
-            <h3>Mazel tov</h3>
-            <p>A warm nod to Marty's Jewish family and the joy of the glass-breaking moment.</p>
-          </article>
-          <article>
-            <span class="detail-mark">03</span>
-            <h3>Guest Photos</h3>
-            <p>Scan the QR code at the reception to add photos to the live gallery.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="traditions-band" aria-labelledby="traditions-title">
-        <div class="section-heading">
-          <p class="kicker">Traditions</p>
-          <h2 id="traditions-title">Two families, one celebration</h2>
-        </div>
-        <div class="traditions-grid">
-          <article>
-            <span>01</span>
-            <h3>Red and gold</h3>
-            <p>
-              Miriam's Chinese heritage leads the palette with lucky red, warm gold, and a subtle
-              double-happiness motif.
-            </p>
-          </article>
-          <article>
-            <span>02</span>
-            <h3>Chuppah spirit</h3>
-            <p>
-              The ceremony honors the feeling of a shared home, with the chapel setting carrying a
-              quiet chuppah-inspired warmth.
-            </p>
-          </article>
-          <article>
-            <span>03</span>
-            <h3>Mazel tov</h3>
-            <p>
-              When the glass is broken, the room gets to lift its voice for Marty and Miriam.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section class="upload-layout" id="upload" aria-labelledby="upload-title">
+    <main class="page-shell">
+      <section class="upload-hero" id="upload" aria-labelledby="hero-title">
+        <div class="hero-overlay"></div>
         <div class="upload-copy">
-          <p class="kicker">Shared memories</p>
-          <h2 id="upload-title">Add your photos in real time</h2>
+          <p class="kicker">Marty & Miriam</p>
+          <h1 id="hero-title">Share your wedding photos</h1>
           <p>
-            Guests can upload ceremony, reception, and dance-floor photos from their phones. Once the
-            backend is configured, new uploads appear automatically in the gallery for everyone.
+            Upload photos from the wedding and they will appear in the live gallery once the
+            real-time backend is connected.
           </p>
         </div>
 
@@ -136,27 +46,12 @@
       <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
         <div class="section-heading">
           <p class="kicker">Live gallery</p>
-          <h2 id="gallery-title">From the people who were there</h2>
+          <h2 id="gallery-title">Photos from tonight</h2>
         </div>
         <div class="empty-state" id="empty-state">
           Photos will appear here as guests upload them.
         </div>
         <div class="gallery-grid" id="gallery-grid" aria-live="polite"></div>
-      </section>
-
-      <section class="qr-section" id="qr" aria-labelledby="qr-title">
-        <div>
-          <p class="kicker">Reception QR</p>
-          <h2 id="qr-title">Put this at the bar, guest book, or table cards</h2>
-          <p>
-            The QR points guests straight to the upload form. Update the deployed site URL in
-            <code>src/config.js</code> after publishing.
-          </p>
-        </div>
-        <div class="qr-card">
-          <canvas id="qr-code" width="240" height="240" aria-label="Photo upload QR code"></canvas>
-          <p id="qr-url"></p>
-        </div>
       </section>
     </main>
 
