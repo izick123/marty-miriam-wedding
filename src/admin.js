@@ -33,9 +33,9 @@ async function init() {
 
 async function unlockAdmin(event) {
   event.preventDefault();
-  const hash = await sha256(els.password.value);
+  const password = els.password.value.trim();
 
-  if (hash !== weddingConfig.adminPasswordHash) {
+  if (password !== weddingConfig.adminPassword) {
     els.loginStatus.textContent = "Wrong password.";
     return;
   }
@@ -119,12 +119,4 @@ function suggestedFilename(photo) {
 
 function setStatus(message) {
   els.status.textContent = message;
-}
-
-async function sha256(value) {
-  const bytes = new TextEncoder().encode(value);
-  const hash = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(hash))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
 }
