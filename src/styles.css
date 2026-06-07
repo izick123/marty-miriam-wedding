@@ -25,6 +25,7 @@ body {
   margin: 0;
   background: var(--red-950);
   color: var(--ink);
+  -webkit-text-size-adjust: 100%;
 }
 
 button,
@@ -38,7 +39,7 @@ input {
 
 .upload-hero {
   position: relative;
-  min-height: 100vh;
+  min-height: 100svh;
   display: grid;
   grid-template-columns: minmax(280px, 0.9fr) minmax(300px, 520px);
   gap: clamp(28px, 5vw, 72px);
@@ -230,7 +231,7 @@ input {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
   gap: 18px;
 }
 
@@ -341,22 +342,123 @@ input {
 @media (max-width: 860px) {
   .upload-hero {
     grid-template-columns: 1fr;
-    align-items: end;
-    padding-top: 86px;
+    align-content: end;
+    gap: 22px;
+    padding-top: 72px;
+  }
+
+  .upload-hero::before {
+    background:
+      linear-gradient(180deg, rgba(54, 6, 9, 0.48), rgba(54, 6, 9, 0.72) 44%, rgba(54, 6, 9, 0.92)),
+      url("../public/assets/wedding-background.png") 50% 28% / cover;
+  }
+
+  .upload-copy {
+    width: min(560px, 100%);
   }
 
   h1 {
-    font-size: clamp(3.2rem, 16vw, 5.4rem);
+    max-width: 9ch;
+    font-size: clamp(3rem, 13vw, 5rem);
   }
 }
 
 @media (max-width: 520px) {
+  .page-shell {
+    overflow-x: hidden;
+  }
+
   .upload-hero {
-    min-height: auto;
-    padding: 64px 18px 28px;
+    min-height: 100svh;
+    padding: 34px 14px 18px;
+  }
+
+  .upload-hero::before {
+    background:
+      linear-gradient(180deg, rgba(54, 6, 9, 0.22), rgba(54, 6, 9, 0.76) 36%, rgba(54, 6, 9, 0.96)),
+      url("../public/assets/wedding-background.png") 48% 18% / auto 100%;
+    transform: none;
+  }
+
+  .hero-overlay {
+    background: linear-gradient(180deg, transparent 0%, rgba(54, 6, 9, 0.5) 34%, rgba(54, 6, 9, 0.94) 100%);
+  }
+
+  .kicker {
+    margin-bottom: 8px;
+    font-size: 0.72rem;
+  }
+
+  h1 {
+    max-width: 10ch;
+    font-size: clamp(2.45rem, 13vw, 3.35rem);
+    line-height: 0.94;
   }
 
   .upload-panel {
-    padding: 18px;
+    gap: 12px;
+    padding: 14px;
+    border-color: rgba(255, 248, 242, 0.34);
+    background: rgba(255, 248, 242, 0.94);
+    box-shadow: 0 16px 38px rgba(36, 5, 8, 0.28);
+    backdrop-filter: blur(10px);
+  }
+
+  label {
+    gap: 6px;
+    font-size: 0.72rem;
+  }
+
+  input {
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  .drop-zone {
+    min-height: 112px;
+    padding: 16px 12px;
+  }
+
+  .drop-zone span {
+    font-size: 1.16rem;
+  }
+
+  .drop-zone small {
+    max-width: 22ch;
+  }
+
+  .button {
+    min-height: 46px;
+    padding: 0 14px;
+  }
+
+  .file-status,
+  .form-status {
+    min-height: 20px;
+    font-size: 0.84rem;
+  }
+
+  .gallery-section {
+    padding: 40px 14px 56px;
+  }
+
+  .section-heading {
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+
+  .empty-state {
+    padding: 20px;
+  }
+
+  .gallery-grid {
+    gap: 14px;
+  }
+
+  .photo-card img {
+    aspect-ratio: 1 / 1;
   }
 }
